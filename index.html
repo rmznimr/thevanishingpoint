@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dot Word Scatter</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.4/p5.min.js"></script>
+  <style>
+    :root {
+      --ink: #231f20;
+      --line: #aeb3b7;
+      --panel: #ffffff;
+      --field: #d2d4d5;
+      --disabled: #c4c7c9;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #f6f6f3;
+      color: var(--ink);
+      font-family: "Courier New", monospace;
+      letter-spacing: 4px;
+    }
+
+    .app {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 24px;
+      min-height: 100vh;
+      padding: 16px;
+    }
+
+    .panel {
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+      padding: 22px 22px 28px;
+      background: var(--panel);
+      border: 2px solid var(--ink);
+      border-radius: 24px;
+    }
+
+    .preview {
+      position: relative;
+      overflow: hidden;
+      min-height: calc(100vh - 32px);
+      padding: 30px;
+      background: #191919;
+      border-radius: 24px;
+    }
+
+    .preview-title,
+    label,
+    .section-title {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .input,
+    .color-text {
+      width: 100%;
+      height: 34px;
+      padding: 6px 12px;
+      border: 2px solid var(--line);
+      border-radius: 7px;
+      background: var(--field);
+      color: #fff;
+      font: inherit;
+      font-size: 16px;
+      letter-spacing: 5px;
+      outline: none;
+    }
+
+    .color-row {
+      display: grid;
+      grid-template-columns: 36px 1fr;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .color-picker {
+      width: 36px;
+      height: 36px;
+      padding: 3px;
+      border: 2px solid var(--line);
+      border-radius: 50%;
+      background: var(--field);
+      cursor: pointer;
+    }
+
+    .color-picker::-webkit-color-swatch-wrapper {
+      padding: 2px;
+    }
+
+    .color-picker::-webkit-color-swatch {
+      border: 0;
+      border-radius: 50%;
+    }
+
+    .color-picker::-moz-color-swatch {
+      border: 0;
+      border-radius: 50%;
+    }
+
+    .segmented {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      overflow: hidden;
+      height: 34px;
+      border: 2px solid var(--line);
+      border-radius: 7px;
+      background: var(--field);
+    }
+
+    .segmented button {
+      border: 0;
+      border-right: 2px solid var(--line);
+      background: var(--field);
+      color: var(--ink);
+      font: inherit;
+      font-size: 13px;
+      letter-spacing: 3px;
+      cursor: pointer;
+    }
+
+    .segmented button:last-child {
+      border-right: 0;
+    }
+
+    .segmented button.active {
+      background: var(--ink);
+      color: #fff;
+    }
+
+    .slider-row {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0;
+      align-items: center;
+    }
+
+    .slider-control {
+      gap: 4px;
+    }
+
+    .slider-control label {
+      margin-bottom: 0;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--ink);
+    }
+
+    input:disabled,
+    button:disabled {
+      opacity: 0.56;
+      cursor: not-allowed;
+    }
+
+    input[type="range"]:disabled {
+      accent-color: var(--disabled);
+      filter: grayscale(1) brightness(0.86);
+    }
+
+    .value {
+      display: none;
+    }
+
+    .spacer {
+      flex: 1;
+      min-height: 18px;
+    }
+
+    .action {
+      height: 36px;
+      border: 0;
+      border-radius: 7px;
+      background: var(--ink);
+      color: #fff;
+      font: inherit;
+      font-size: 15px;
+      letter-spacing: 4px;
+      cursor: pointer;
+    }
+
+    #canvasHolder {
+      position: absolute;
+      inset: 72px 30px 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #canvasHolder canvas {
+      max-width: none;
+      max-height: none;
+      display: block;
+      image-rendering: auto;
+    }
+
+    @media (max-width: 860px) {
+      .app {
+        grid-template-columns: 1fr;
+      }
+
+      .preview {
+        min-height: 540px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <aside class="panel">
+      <div class="control-group">
+        <label for="wordInput">Concept</label>
+        <input id="wordInput" class="input" type="text" value="CONCEPT" autocomplete="off" />
+      </div>
+      
+      
+      <div class="control-group slider-control">
+      <label for="xSpacingSlider">Letters Spacing</label>
+        <div class="slider-row">
+          <input id="xSpacingSlider" type="range" min="2" max="8" value="4" step="1" />
+          <span id="xSpacingValue" class="value">4</span>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <label for="wordColorPicker">Word Color</label>
+        <div class="color-row">
+          <input id="wordColorPicker" class="color-picker" type="color" value="#ffffff" />
+          <input id="wordColorText" class="color-text" type="text" value="#ffffff" />
+        </div>
+      </div>
+
+      <div class="control-group">
+        <label for="bgColorPicker">Background Color</label>
+        <div class="color-row">
+          <input id="bgColorPicker" class="color-picker" type="color" value="#191919" />
+          <input id="bgColorText" class="color-text" type="text" value="#191919" />
+        </div>
+      </div>
+
+      <div class="spacer"></div>
+
+      <section class="control-group">
+        <div class="section-title">Direction</div>
+        <div class="segmented" data-group="direction">
+          <button type="button" data-value="L">Left</button>
+          <button type="button" data-value="R">Right</button>
+          <button type="button" data-value="RL" class="active">All</button>
+        </div>
+      </section>
+
+      <div class="control-group slider-control">
+        <label for="fromAmountSlider">No of Letters</label>
+        <div class="slider-row">
+          <input id="fromAmountSlider" type="range" min="1" max="5" value="2" step="1" />
+          <span id="fromAmountValue" class="value">3</span>
+        </div>
+      </div>
+
+      <div class="control-group slider-control">
+        <label for="intensitySlider">Intensity</label>
+        <div class="slider-row">
+          <input id="intensitySlider" type="range" min="0" max="8" value="2" step="1" />
+          <span id="intensityValue" class="value">3</span>
+        </div>
+      </div>
+
+      <div class="spacer"></div>
+
+      <section class="control-group">
+        <div class="section-title">Axis of Scatterness</div>
+        <div class="segmented" data-group="axis">
+          <button type="button" data-value="x">X</button>
+          <button type="button" data-value="y">Y</button>
+          <button type="button" data-value="xy" class="active">XY</button>
+        </div>
+      </section>
+
+      <div class="control-group slider-control">
+        <label for="xExpandSlider">X Expand</label>
+        <div class="slider-row">
+          <input id="xExpandSlider" type="range" min="3" max="20" value="5" step="1" />
+          <span id="xExpandValue" class="value">5</span>
+        </div>
+      </div>
+
+      <div class="control-group slider-control">
+        <label for="yExpandSlider">Y Expand</label>
+        <div class="slider-row">
+          <input id="yExpandSlider" type="range" min="3" max="50" value="18" step="1" />
+          <span id="yExpandValue" class="value">18</span>
+        </div>
+      </div>
+
+      <div class="control-group slider-control">
+        <label for="densitySlider">Density</label>
+        <div class="slider-row">
+          <input id="densitySlider" type="range" min="1" max="10" value="1" step="1" />
+          <span id="densityValue" class="value">1</span>
+        </div>
+      </div>
+
+      <div class="spacer"></div>
+
+      <button id="randomiseButton" class="action" type="button">Randomise</button>
+      <button id="saveButton" class="action" type="button">Save</button>
+    </aside>
+
+    <section id="previewPanel" class="preview">
+      <div class="preview-title">Preview</div>
+      <div id="canvasHolder"></div>
+    </section>
+  </main>
+
+  <script>
+    let sizeDot = 10;
+    let dotStep
+    let scatterAmount = 2;
+    let scatterAmountMax = 8;
+
+    let theWord = "Concept";
+    let userRorL = "RL";
+    let fromAmount = 2;
+    let axisMode = "xy";
+    let density = 1;
+
+    let wordColor = "#ffffff";
+    let bgColor = "#191919";
+
+    let xSpacing = 4;
+    let letterCols
+
+    const letterRows = 9;
+
+    let wordCols;
+    let wordRows;
+
+    let xCoExpand = 2;
+    let xExpand;
+
+    let yCoExpand = 18;
+    let yExpand;
+
+    let colCount;
+    let rowCount;
+
+    let removedDots = [];
+    let sketchCanvas;
+    let currentFrameDots = [];
+    let scatterSeed = Math.floor(Math.random() * 1000000000);
+
+    const typeface = {
+      A: [[3,1], [5,1], [1,3], [7,3], [1,5], [7,5], [1,7], [3,7], [5,7], [7,7], [1,9], [7,9]],
+      B: [[1,1], [3,1], [5,1], [1,3], [7,3], [1,5], [3,5], [5,5], [1,7], [7,7], [1,9], [3,9], [5,9]],
+      C: [[3,1], [5,1], [7,1], [1,3], [1,5], [1,7], [3,9], [5,9], [7,9]],
+      D: [[1,1], [3,1], [5,1], [1,3], [7,3], [1,5], [7,5], [1,7], [7,7], [1,9], [3,9], [5,9]],
+      E: [[1,1], [3,1], [5,1], [7,1], [1,3], [1,5], [3,5], [5,5], [1,7], [1,9], [3,9], [5,9], [7,9]],
+      F: [[1,1], [3,1], [5,1], [7,1], [1,3], [1,5], [3,5], [5,5], [1,7], [1,9]],
+      G: [[3,1], [5,1], [7,1], [1,3], [1,5], [5,5], [7,5], [1,7], [7,7], [3,9], [5,9], [7,9]],
+      H: [[1,1], [7,1], [1,3], [7,3], [1,5], [3,5], [5,5], [7,5], [1,7], [7,7], [1,9], [7,9]],
+      I: [[1,1], [3,1], [5,1], [7,1], [4,3], [4,5], [4,7], [1,9], [3,9], [5,9], [7,9]],
+      J: [[3,1], [5,1], [7,1], [5,3], [1,5], [5,5], [1,7], [5,7], [3,9], [5,9]],
+      K: [[1,1], [7,1], [1,3], [7,3], [1,5], [3,5], [5,5], [1,7], [7,7], [1,9], [7,9]],
+      L: [[1,1], [1,3], [1,5], [1,7], [1,9], [3,9], [5,9], [7,9]],
+      M: [[1,1], [7,1], [1,3], [3,3], [5,3], [7,3], [1,5], [4,5], [7,5], [1,7], [7,7], [1,9], [7,9]],
+      N: [[1,1], [7,1], [1,3], [3,3], [7,3], [1,5], [4,5], [7,5], [1,7], [5,7], [7,7], [1,9], [7,9]],
+      O: [[3,1], [5,1], [1,3], [7,3], [1,5], [7,5], [1,7], [7,7], [3,9], [5,9]],
+      P: [[1,1], [3,1], [5,1], [1,3], [7,3], [1,5], [7,5], [1,7], [3,7], [5,7], [1,9]],
+      Q: [[3,1], [5,1], [1,3], [7,3], [1,5], [7,5], [1,7], [7,7], [3,9], [5,9], [7,9]],
+      R: [[1,1], [3,1], [5,1], [1,3], [7,3], [1,5], [7,5], [1,7], [3,7], [5,7], [1,9], [7,9]],
+      S: [[3,1], [5,1], [7,1], [1,3], [1,5], [3,5], [5,5], [7,7], [1,9], [3,9], [5,9]],
+      T: [[1,1], [3,1], [5,1], [7,1], [4,3], [4,5], [4,7], [4,9]],
+      U: [[1,1], [7,1], [1,3], [7,3], [1,5], [7,5], [1,7], [7,7], [3,9], [5,9]],
+      V: [[1,1], [7,1], [1,3], [7,3], [1,5], [7,5], [2,7], [6,7], [4,9]],
+      W: [[1,1], [7,1], [1,3], [7,3], [1,5], [4,5], [7,5], [1,7], [3,7], [5,7], [7,7], [1,9], [7,9]],
+      X: [[1,1], [7,1], [1,3], [7,3], [3,5], [5,5], [1,7], [7,7], [1,9], [7,9]],
+      Y: [[1,1], [7,1], [1,3], [7,3], [3,5], [5,5], [4,7], [4,9]],
+      Z: [[1,1], [3,1], [5,1], [7,1], [7,3], [3,5], [5,5], [1,7], [1,9], [3,9], [5,9], [7,9]],
+    };
+
+    function setup() {
+      buildStructure();
+      pixelDensity(constrain((window.devicePixelRatio || 1) * 2, 2, 4));
+      sketchCanvas = createCanvas(dotStep * (2 + colCount), dotStep * (2 + rowCount));
+      sketchCanvas.parent("canvasHolder");
+      fitCanvasToPreview();
+      randomSelect();
+      noLoop();
+      setupControls();
+      redraw();
+    }
+
+    function draw() {
+      background(bgColor);
+      currentFrameDots = [];
+
+      drawWord(theWord);
+
+      randomSeed(scatterSeed);
+
+      for (let i = 0; i < density; i++) {
+        if (axisMode === "x") {
+          xScatter();
+        } else if (axisMode === "y") {
+          yScatter();
+        } else if (axisMode === "xy") {
+          fullScatter();
+        }
+      }
+    }
+
+    function buildStructure() {
+      let wordLength = max(theWord.length, 1);
+      
+      dotStep = sizeDot * 0.9;
+      letterCols = 7 + xSpacing;
+
+      xExpand = wordLength * xCoExpand;
+      yExpand = 1 * yCoExpand;
+
+      wordCols = (wordLength - 1) * letterCols + 7;      
+      wordRows = 1 * letterRows;
+
+      colCount = xExpand + wordCols + xExpand;
+      rowCount = yExpand + wordRows + yExpand;
+      
+      
+    }
+
+    function rebuildSketch(shouldRandomSelect) {
+      buildStructure();
+      resizeCanvas(dotStep * (2 + colCount), dotStep * (2 + rowCount));
+      fitCanvasToPreview();
+
+      if (shouldRandomSelect) {
+        randomSeed(Math.floor(Math.random() * 1000000000));
+        randomSelect();
+      }
+
+      scatterSeed = Math.floor(Math.random() * 1000000000);
+      redraw();
+    }
+
+    function fitCanvasToPreview() {
+      if (!sketchCanvas) {
+        return;
+      }
+
+      let holder = document.getElementById("canvasHolder");
+      let holderWidth = holder.clientWidth;
+      let holderHeight = holder.clientHeight;
+      let canvasRatio = width / height;
+
+      let displayWidth = holderWidth;
+      let displayHeight = displayWidth / canvasRatio;
+
+      if (displayHeight > holderHeight) {
+        displayHeight = holderHeight;
+        displayWidth = displayHeight * canvasRatio;
+      }
+
+      sketchCanvas.elt.style.width = `${displayWidth}px`;
+      sketchCanvas.elt.style.height = `${displayHeight}px`;
+    }
+
+    function windowResized() {
+      fitCanvasToPreview();
+    }
+
+    function drawWord(word) {
+      let upperWord = word.toUpperCase();
+
+      for (let letterNumber = 0; letterNumber < upperWord.length; letterNumber++) {
+        let currentLetter = upperWord[letterNumber];
+
+        if (typeface[currentLetter]) {
+          drawLetters(currentLetter, letterNumber);
+        }
+      }
+    }
+
+    function drawLetters(theLetter, letterNumber) {
+      let dots = typeface[theLetter];
+      let xOffset = letterNumber * letterCols;
+
+      for (let i = 0; i < dots.length; i++) {
+        if (isRemovedDot(letterNumber, i)) {
+          continue;
+        }
+
+        let dotCol = dots[i][0];
+        let dotRow = dots[i][1];
+
+        let xCenter = dotStep * (dotCol + xOffset + xExpand);
+        let yCenter = dotStep * (dotRow + yExpand);
+
+        drawDot(xCenter, yCenter);
+      }
+    }
+
+    function drawDot(xCenter, yCenter) {
+      fill(wordColor);
+      noStroke();
+      circle(xCenter, yCenter, sizeDot);
+
+      currentFrameDots.push({
+        x: xCenter,
+        y: yCenter,
+        r: sizeDot / 2,
+        color: wordColor
+      });
+    }
+
+    function isRemovedDot(letterNumber, dotIndex) {
+      for (let removedDot of removedDots) {
+        if (removedDot.letterNumber === letterNumber && removedDot.dotIndex === dotIndex) {
+          return true;
+        }
+      }
+
+      return false;
+    }
+
+    function randomSelect() {
+      removedDots = [];
+
+      let upperWord = theWord.toUpperCase();
+      let selectedLetters = min(fromAmount, upperWord.length);
+      let userSide = userRorL.toUpperCase();
+
+      let startLetter = 0;
+      let endLetter = upperWord.length;
+
+      if (userSide === "L") {
+        startLetter = 0;
+        endLetter = selectedLetters;
+      } else if (userSide === "R") {
+        startLetter = upperWord.length - selectedLetters;
+        endLetter = upperWord.length;
+      } else if (userSide === "RL") {
+        startLetter = 0;
+        endLetter = upperWord.length;
+      }
+
+      for (let letterNumber = startLetter; letterNumber < endLetter; letterNumber++) {
+        let currentLetter = upperWord[letterNumber];
+        let dots = typeface[currentLetter];
+
+        if (!dots) {
+          continue;
+        }
+
+        let chosen = [];
+
+        while (chosen.length < scatterAmount && chosen.length < dots.length) {
+          let randomNo = floor(random(dots.length));
+
+          if (!chosen.includes(randomNo)) {
+            chosen.push(randomNo);
+
+            removedDots.push({
+              letterNumber: letterNumber,
+              dotIndex: randomNo
+            });
+          }
+        }
+      }
+    }
+
+    function yScatter() {
+      let upperWord = theWord.toUpperCase();
+
+      for (let removedDot of removedDots) {
+        let letterNumber = removedDot.letterNumber;
+        let dotIndex = removedDot.dotIndex;
+
+        let currentLetter = upperWord[letterNumber];
+        let dots = typeface[currentLetter];
+
+        if (!dots) {
+          continue;
+        }
+
+        let dotCol = dots[dotIndex][0];
+
+        let xOffset = letterNumber * letterCols;
+        let xCenter = dotStep * (dotCol + xOffset + xExpand);
+
+        let moveUp = random([true, false]);
+        let rowDot;
+
+        if (moveUp) {
+          rowDot = floor(random(1, yExpand));
+        } else {
+          rowDot = floor(random(yExpand + 1 + letterRows + 1, yExpand + letterRows + yExpand + 1));
+        }
+
+        let yCenter = dotStep * rowDot;
+
+        drawDot(xCenter, yCenter);
+      }
+    }
+
+    function xScatter() {
+      let upperWord = theWord.toUpperCase();
+      let userSide = userRorL.toUpperCase();
+
+      for (let removedDot of removedDots) {
+        let letterNumber = removedDot.letterNumber;
+        let dotIndex = removedDot.dotIndex;
+
+        let currentLetter = upperWord[letterNumber];
+        let dots = typeface[currentLetter];
+
+        if (!dots) {
+          continue;
+        }
+
+        let dotRow = dots[dotIndex][1];
+        let colDot;
+
+        if (userSide === "L") {
+          colDot = floor(random(1, xExpand-1));
+        } else if (userSide === "R") {
+          colDot = floor(random(xExpand + 2 + wordCols + 1, xExpand + wordCols + xExpand + 1));
+        } else if (userSide === "RL") {
+          let moveLeft = random([true, false]);
+
+          if (moveLeft) {
+            colDot = floor(random(1, xExpand-1));
+          } else {
+            colDot = floor(random(xExpand + 2 + wordCols + 1, xExpand + wordCols + xExpand + 1));
+          }
+        }
+
+        let xCenter = dotStep * colDot;
+        let yCenter = dotStep * (dotRow + yExpand);
+
+        drawDot(xCenter, yCenter);
+      }
+    }
+
+    function fullScatter() {
+      let upperWord = theWord.toUpperCase();
+      let userSide = userRorL.toUpperCase();
+
+      let selectedLetters = min(fromAmount, upperWord.length);
+
+      let area2StartCol = xExpand + 1;
+      let area2EndCol = xExpand + wordCols;
+
+      if (userSide === "L") {
+        area2StartCol = xExpand + 1;
+        area2EndCol = xExpand + selectedLetters * letterCols - xSpacing;
+      } else if (userSide === "R") {
+        area2StartCol = 1 + xExpand + (upperWord.length - selectedLetters) * letterCols;
+        area2EndCol = xExpand + wordCols;
+      } else if (userSide === "RL") {
+        area2StartCol = xExpand + 1;
+        area2EndCol = xExpand + wordCols;
+      }
+
+      for (let removedDot of removedDots) {
+        let areaNo;
+
+        if (userSide === "L") {
+          areaNo = random([1, 2]);
+        } else if (userSide === "R") {
+          areaNo = random([2, 3]);
+        } else if (userSide === "RL") {
+          areaNo = random([1, 2, 3]);
+        }
+
+        let colDot;
+        let rowDot;
+
+        if (areaNo === 1) {
+          colDot = floor(random(1, xExpand-1));
+          rowDot = floor(random(1, yExpand + wordRows + yExpand + 1));
+        } else if (areaNo === 2) {
+          colDot = floor(random(area2StartCol, area2EndCol + 1));
+
+          let moveUp = random([true, false]);
+
+          if (moveUp) {
+            rowDot = floor(random(1, yExpand));
+          } else {
+            rowDot = floor(random(yExpand + letterRows + 2, yExpand + letterRows + yExpand + 1));
+          }
+        } else if (areaNo === 3) {
+          colDot = floor(random(xExpand + 2 + wordCols + 1, xExpand + wordCols + xExpand + 1));
+          rowDot = floor(random(1, yExpand + wordRows + yExpand + 1));
+        }
+
+        let xCenter = dotStep * colDot;
+        let yCenter = dotStep * rowDot;
+
+        drawDot(xCenter, yCenter);
+      }
+    }
+
+    function setupControls() {
+      const wordInput = document.getElementById("wordInput");
+      const xSpacingSlider = document.getElementById("xSpacingSlider");
+      const wordColorPicker = document.getElementById("wordColorPicker");
+      const wordColorText = document.getElementById("wordColorText");
+      const bgColorPicker = document.getElementById("bgColorPicker");
+      const bgColorText = document.getElementById("bgColorText");
+      const fromAmountSlider = document.getElementById("fromAmountSlider");
+      const intensitySlider = document.getElementById("intensitySlider");
+      const xExpandSlider = document.getElementById("xExpandSlider");
+      const yExpandSlider = document.getElementById("yExpandSlider");
+      const densitySlider = document.getElementById("densitySlider");
+
+      wordInput.addEventListener("input", () => {
+        theWord = cleanWord(wordInput.value);
+        wordInput.value = theWord;
+        updateFromAmountLimits();
+        rebuildSketch(true);
+      });
+      
+      xSpacingSlider.addEventListener("input", () => {
+        xSpacing = int(xSpacingSlider.value);
+        letterCols = 7 + xSpacing;
+        updateSliderValues();
+        rebuildSketch(false);
+      });
+
+      bindColor(wordColorPicker, wordColorText, (value) => {
+        wordColor = value;
+        redraw();
+      });
+
+      bindColor(bgColorPicker, bgColorText, (value) => {
+        bgColor = value;
+        document.getElementById("previewPanel").style.background = bgColor;
+        redraw();
+      });
+
+      document.querySelectorAll('[data-group="direction"] button').forEach((button) => {
+        button.addEventListener("click", () => {
+          userRorL = button.dataset.value;
+          setActiveButton("direction", userRorL);
+          updateControlState();
+          rebuildSketch(true);
+        });
+      });
+
+      document.querySelectorAll('[data-group="axis"] button').forEach((button) => {
+        button.addEventListener("click", () => {
+          axisMode = button.dataset.value;
+          setActiveButton("axis", axisMode);
+          updateControlState();
+          rebuildSketch(false);
+        });
+      });
+
+      fromAmountSlider.addEventListener("input", () => {
+        fromAmount = int(fromAmountSlider.value);
+        updateSliderValues();
+        rebuildSketch(true);
+      });
+
+      intensitySlider.addEventListener("input", () => {
+        scatterAmount = int(intensitySlider.value);
+        updateSliderValues();
+        rebuildSketch(true);
+      });
+
+      xExpandSlider.addEventListener("input", () => {
+        xCoExpand = int(xExpandSlider.value);
+        updateSliderValues();
+        rebuildSketch(false);
+      });
+
+      yExpandSlider.addEventListener("input", () => {
+        yCoExpand = int(yExpandSlider.value);
+        updateSliderValues();
+        rebuildSketch(false);
+      });
+
+      densitySlider.addEventListener("input", () => {
+        density = int(densitySlider.value);
+        updateSliderValues();
+        redraw();
+      });
+
+      document.getElementById("randomiseButton").addEventListener("click", () => {
+        randomSeed(Math.floor(Math.random() * 1000000000));
+        randomSelect();
+        scatterSeed = Math.floor(Math.random() * 1000000000);
+        redraw();
+      });
+
+      document.getElementById("saveButton").addEventListener("click", () => {
+        saveArtwork();
+      });
+
+      updateFromAmountLimits();
+      updateSliderValues();
+      updateControlState();
+      document.getElementById("previewPanel").style.background = bgColor;
+    }
+
+    function bindColor(picker, textInput, onChange) {
+      picker.addEventListener("input", () => {
+        textInput.value = picker.value;
+        onChange(picker.value);
+      });
+
+      textInput.addEventListener("input", () => {
+        let value = normalizeHex(textInput.value);
+
+        if (value) {
+          picker.value = value;
+          textInput.value = value;
+          onChange(value);
+        }
+      });
+    }
+
+    function cleanWord(value) {
+      return value.toUpperCase().replace(/[^A-Z]/g, "");
+    }
+
+    function normalizeHex(value) {
+      let hex = value.trim();
+
+      if (!hex.startsWith("#")) {
+        hex = "#" + hex;
+      }
+
+      if (/^#[0-9a-fA-F]{6}$/.test(hex)) {
+        return hex.toLowerCase();
+      }
+
+      return null;
+    }
+
+    function updateFromAmountLimits() {
+      const fromAmountSlider = document.getElementById("fromAmountSlider");
+      let maxLetters = max(theWord.length, 1);
+
+      fromAmountSlider.max = maxLetters;
+      fromAmount = constrain(fromAmount, 1, maxLetters);
+      fromAmountSlider.value = fromAmount;
+
+      updateSliderValues();
+    }
+
+    function updateSliderValues() {
+      document.getElementById("xSpacingValue").textContent = xSpacing;
+      document.getElementById("fromAmountValue").textContent = fromAmount;
+      document.getElementById("intensityValue").textContent = scatterAmount;
+      document.getElementById("xExpandValue").textContent = xCoExpand;
+      document.getElementById("yExpandValue").textContent = yCoExpand;
+      document.getElementById("densityValue").textContent = density;
+    }
+
+   function updateControlState() {
+  const fromAmountSlider = document.getElementById("fromAmountSlider");
+  const xExpandSlider = document.getElementById("xExpandSlider");
+  const yExpandSlider = document.getElementById("yExpandSlider");
+  const densitySlider = document.getElementById("densitySlider");
+
+  fromAmountSlider.disabled = userRorL.toUpperCase() === "RL";
+  xExpandSlider.disabled = axisMode === "y";
+  yExpandSlider.disabled = axisMode === "x";
+  densitySlider.disabled = false;
+}
+
+    function setActiveButton(groupName, value) {
+      document.querySelectorAll(`[data-group="${groupName}"] button`).forEach((button) => {
+        button.classList.toggle("active", button.dataset.value === value);
+      });
+    }
+
+function saveArtwork() {
+  let fileName = `${theWord || "word"}-scatter`;
+
+  saveSVG(fileName);
+
+  setTimeout(() => {
+    saveCanvas(sketchCanvas, fileName, "png");
+  }, 500);
+}
+
+    function saveSVG(fileName) {
+      let circles = currentFrameDots.map((dot) => {
+        return `<circle cx="${formatNumber(dot.x)}" cy="${formatNumber(dot.y)}" r="${formatNumber(dot.r)}" fill="${dot.color}" />`;
+      }).join("\n  ");
+
+      let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
+  <rect width="100%" height="100%" fill="${bgColor}" />
+  ${circles}
+</svg>`;
+
+      let blob = new Blob([svg], { type: "image/svg+xml" });
+      let url = URL.createObjectURL(blob);
+      let link = document.createElement("a");
+
+      link.href = url;
+      link.download = `${fileName}.svg`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }
+
+    function formatNumber(value) {
+      return Number(value.toFixed(2));
+    }
+  </script>
+</body>
+</html>
