@@ -478,7 +478,7 @@
 
     function rebuildSketch(shouldRandomSelect) {
       buildStructure();
-      resizeCanvas(dotStep * (2 + colCount), dotStep * (2 + rowCount));
+      resizeCanvas(dotStep * (2 + 1.5 * colCount), dotStep * (2 + rowCount));
       fitCanvasToPreview();
 
       if (shouldRandomSelect) {
