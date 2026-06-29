@@ -337,7 +337,7 @@
       <div class="control-group slider-control">
         <label for="xExpandSlider">X EXPAND</label>
         <div class="slider-row">
-          <input id="xExpandSlider" type="range" min="1" max="10" value="5" step="1" />
+          <input id="xExpandSlider" type="range" min="1" max="16" value="8" step="1" />
           <span id="xExpandValue" class="value">5</span>
         </div>
       </div>
@@ -386,7 +386,7 @@
     let wordCols;
     let wordRows;
 
-    let xCoExpand = 5;
+    let xCoExpand = 8;
     let xExpand;
 
     let yCoExpand = 18;
@@ -466,7 +466,7 @@
       dotStep = sizeDot * 0.9;
       letterCols = 7 + xSpacing;
 
-      xExpand = wordLength * xCoExpand;
+      xExpand = (wordLength-2) * xCoExpand;
       yExpand = 1 * yCoExpand;
 
       wordCols = (wordLength - 1) * letterCols + 7;
