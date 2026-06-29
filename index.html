@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+ <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>DOT WORD SCATTER</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.4/p5.min.js"></script>
+  <link rel="stylesheet" href="https://use.typekit.net/rpq0oky.css">
   <style>
     :root {
       --ink: #231f20;
@@ -18,14 +20,22 @@
       box-sizing: border-box;
     }
 
-    body {
+    /* body {
       margin: 0;
       min-height: 100vh;
       background: #f6f6f3;
       color: var(--ink);
       font-family: "Courier New", monospace;
       letter-spacing: 4px;
-    }
+    } */
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: #f6f6f3;
+        color: var(--ink);
+        font-family: "ocr-b-std", "Courier New";
+        letter-spacing: 2px;
+}
 
     .app {
       display: grid;
@@ -50,7 +60,7 @@
       overflow: hidden;
       min-height: calc(100vh - 32px);
       padding: 30px;
-      background: #191919;
+      background: #ffffff;
       border-radius: 24px;
     }
 
@@ -257,7 +267,7 @@
       </div>
 
       <div class="control-group slider-control">
-        <label for="xSpacingSlider">LETTERS OF SPACING</label>
+        <label for="xSpacingSlider">LETTERS SPACING</label>
         <div class="slider-row">
           <input id="xSpacingSlider" type="range" min="2" max="8" value="4" step="1" />
           <span id="xSpacingValue" class="value">4</span>
@@ -267,16 +277,18 @@
       <div class="control-group">
         <label for="wordColorPicker">WORD COLOR</label>
         <div class="color-row">
-          <input id="wordColorPicker" class="color-picker" type="color" value="#ffffff" />
-          <input id="wordColorText" class="color-text" type="text" value="#ffffff" />
+          <!-- <input id="wordColorPicker" class="color-picker" type="color" value="#ffffff" />
+          <input id="wordColorText" class="color-text" type="text" value="#ffffff" /> -->
+          <input id="wordColorPicker" class="color-picker" type="color" value="#000000" />
+          <input id="wordColorText" class="color-text" type="text" value="#000000" />
         </div>
       </div>
 
       <div class="control-group">
         <label for="bgColorPicker">BACKGROUND COLOR</label>
         <div class="color-row">
-          <input id="bgColorPicker" class="color-picker" type="color" value="#191919" />
-          <input id="bgColorText" class="color-text" type="text" value="#191919" />
+          <input id="bgColorPicker" class="color-picker" type="color" value="#ffffff" />
+          <input id="bgColorText" class="color-text" type="text" value="#ffffff" />
         </div>
       </div>
 
@@ -287,16 +299,18 @@
         <div class="segmented direction-grid" data-group="direction">
           <button type="button" data-value="L">LEFT</button>
           <button type="button" data-value="R">RIGHT</button>
-          <button type="button" data-value="M">INSIDE</button>
-          <button type="button" data-value="RL" class="active">ALL</button>
+          <!-- <button type="button" data-value="M">INSIDE</button>
+          <button type="button" data-value="RL" class="active">ALL</button> -->
+          <button type="button" data-value="M" class="active">INSIDE</button>
+          <button type="button" data-value="RL">ALL</button>
         </div>
       </section>
 
       <div class="control-group slider-control">
         <label for="fromAmountSlider">NO OF LETTERS</label>
         <div class="slider-row">
-          <input id="fromAmountSlider" type="range" min="1" max="5" value="3" step="1" />
-          <span id="fromAmountValue" class="value">3</span>
+          <input id="fromAmountSlider" type="range" min="1" max="5" value="2" step="1" />
+          <span id="fromAmountValue" class="value">2</span>
         </div>
       </div>
 
@@ -337,7 +351,7 @@
       <div class="control-group slider-control">
         <label for="xExpandSlider">X EXPAND</label>
         <div class="slider-row">
-          <input id="xExpandSlider" type="range" min="1" max="16" value="8" step="1" />
+          <input id="xExpandSlider" type="range" min="1" max="10" value="5" step="1" />
           <span id="xExpandValue" class="value">5</span>
         </div>
       </div>
@@ -369,14 +383,14 @@
     let scatterAmountMax = 5;
 
     let theWord = "limbo";
-    let userRorL = "RL";
-    let fromAmount = 3;
+    let userRorL = "M";
+    let fromAmount = 2;
     let axisMode = "xy";
     let intensityMode = "even";
     let density = 1;
 
-    let wordColor = "#ffffff";
-    let bgColor = "#191919";
+    let wordColor = "#000000";
+    let bgColor = "#ffffff";
 
     let xSpacing = 4;
 
@@ -386,7 +400,7 @@
     let wordCols;
     let wordRows;
 
-    let xCoExpand = 8;
+    let xCoExpand = 5;
     let xExpand;
 
     let yCoExpand = 18;
@@ -432,7 +446,7 @@
     function setup() {
       buildStructure();
       pixelDensity(constrain((window.devicePixelRatio || 1) * 2, 2, 4));
-      sketchCanvas = createCanvas(sizeDot * (2 + colCount), sizeDot * (2 + rowCount));
+      sketchCanvas = createCanvas(dotStep * (2 + colCount), dotStep * (2 + rowCount));
       sketchCanvas.parent("canvasHolder");
       fitCanvasToPreview();
       randomSelect();
@@ -466,7 +480,7 @@
       dotStep = sizeDot * 0.9;
       letterCols = 7 + xSpacing;
 
-      xExpand = (wordLength-2) * xCoExpand;
+      xExpand = wordLength * xCoExpand;
       yExpand = 1 * yCoExpand;
 
       wordCols = (wordLength - 1) * letterCols + 7;
@@ -478,7 +492,7 @@
 
     function rebuildSketch(shouldRandomSelect) {
       buildStructure();
-      resizeCanvas(sizeDot * (2 + colCount), sizeDot * (2 + rowCount));
+      resizeCanvas(dotStep * (2 + colCount), dotStep * (2 + rowCount));
       fitCanvasToPreview();
 
       if (shouldRandomSelect) {
@@ -507,6 +521,9 @@
         displayHeight = holderHeight;
         displayWidth = displayHeight * canvasRatio;
       }
+
+      displayWidth *= 0.75;
+      displayHeight *= 0.75;
 
       sketchCanvas.elt.style.width = `${displayWidth}px`;
       sketchCanvas.elt.style.height = `${displayHeight}px`;
@@ -1036,11 +1053,14 @@
       });
     }
 
-    function saveArtwork() {
-      let fileName = `${theWord || "word"}-scatter`;
-      saveCanvas(sketchCanvas, fileName, "png");
-      saveSVG(fileName);
-    }
+   function saveArtwork() {
+  let fileName = `${theWord || "word"}-scatter`;
+  saveCanvas(sketchCanvas, fileName, "png");
+
+  setTimeout(() => {
+    saveSVG(fileName);
+  }, 500);
+}
 
     function saveSVG(fileName) {
       let circles = currentFrameDots.map((dot) => {
