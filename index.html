@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dot Word Scatter</title>
+  <title>DOT WORD SCATTER</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.4/p5.min.js"></script>
   <style>
     :root {
@@ -146,6 +146,30 @@
       color: #fff;
     }
 
+    .direction-grid {
+      grid-template-columns: repeat(2, 1fr);
+      height: 68px;
+    }
+
+    .direction-grid button {
+      border-right: 2px solid var(--line);
+      border-bottom: 2px solid var(--line);
+    }
+
+    .direction-grid button:nth-child(2),
+    .direction-grid button:nth-child(4) {
+      border-right: 0;
+    }
+
+    .direction-grid button:nth-child(3),
+    .direction-grid button:nth-child(4) {
+      border-bottom: 0;
+    }
+
+    .two-way {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
     .slider-row {
       display: grid;
       grid-template-columns: 1fr;
@@ -228,13 +252,12 @@
   <main class="app">
     <aside class="panel">
       <div class="control-group">
-        <label for="wordInput">Concept</label>
-        <input id="wordInput" class="input" type="text" value="CONCEPT" autocomplete="off" />
+        <label for="wordInput">WORD</label>
+        <input id="wordInput" class="input" type="text" value="WORD" autocomplete="off" />
       </div>
-      
-      
+
       <div class="control-group slider-control">
-      <label for="xSpacingSlider">Letters Spacing</label>
+        <label for="xSpacingSlider">LETTERS OF SPACING</label>
         <div class="slider-row">
           <input id="xSpacingSlider" type="range" min="2" max="8" value="4" step="1" />
           <span id="xSpacingValue" class="value">4</span>
@@ -242,7 +265,7 @@
       </div>
 
       <div class="control-group">
-        <label for="wordColorPicker">Word Color</label>
+        <label for="wordColorPicker">WORD COLOR</label>
         <div class="color-row">
           <input id="wordColorPicker" class="color-picker" type="color" value="#ffffff" />
           <input id="wordColorText" class="color-text" type="text" value="#ffffff" />
@@ -250,7 +273,7 @@
       </div>
 
       <div class="control-group">
-        <label for="bgColorPicker">Background Color</label>
+        <label for="bgColorPicker">BACKGROUND COLOR</label>
         <div class="color-row">
           <input id="bgColorPicker" class="color-picker" type="color" value="#191919" />
           <input id="bgColorText" class="color-text" type="text" value="#191919" />
@@ -260,34 +283,50 @@
       <div class="spacer"></div>
 
       <section class="control-group">
-        <div class="section-title">Direction</div>
-        <div class="segmented" data-group="direction">
-          <button type="button" data-value="L">Left</button>
-          <button type="button" data-value="R">Right</button>
-          <button type="button" data-value="RL" class="active">All</button>
+        <div class="section-title">DIRECTION</div>
+        <div class="segmented direction-grid" data-group="direction">
+          <button type="button" data-value="L">LEFT</button>
+          <button type="button" data-value="R">RIGHT</button>
+          <button type="button" data-value="M">INSIDE</button>
+          <button type="button" data-value="RL" class="active">ALL</button>
         </div>
       </section>
 
       <div class="control-group slider-control">
-        <label for="fromAmountSlider">No of Letters</label>
+        <label for="fromAmountSlider">NO OF LETTERS</label>
         <div class="slider-row">
-          <input id="fromAmountSlider" type="range" min="1" max="5" value="2" step="1" />
+          <input id="fromAmountSlider" type="range" min="1" max="5" value="3" step="1" />
           <span id="fromAmountValue" class="value">3</span>
         </div>
       </div>
 
       <div class="control-group slider-control">
-        <label for="intensitySlider">Intensity</label>
+        <label for="intensitySlider">INTENSITY</label>
         <div class="slider-row">
-          <input id="intensitySlider" type="range" min="0" max="8" value="2" step="1" />
+          <input id="intensitySlider" type="range" min="0" max="5" value="3" step="1" />
           <span id="intensityValue" class="value">3</span>
+        </div>
+      </div>
+
+      <section class="control-group">
+        <div class="segmented two-way" data-group="intensityMode">
+          <button type="button" data-value="even" class="active">EVEN</button>
+          <button type="button" data-value="gradual">GRADUAL</button>
+        </div>
+      </section>
+
+      <div class="control-group slider-control">
+        <label for="densitySlider">DENSITY</label>
+        <div class="slider-row">
+          <input id="densitySlider" type="range" min="1" max="5" value="1" step="1" />
+          <span id="densityValue" class="value">1</span>
         </div>
       </div>
 
       <div class="spacer"></div>
 
       <section class="control-group">
-        <div class="section-title">Axis of Scatterness</div>
+        <div class="section-title">AXIS OF SCATTERNESS</div>
         <div class="segmented" data-group="axis">
           <button type="button" data-value="x">X</button>
           <button type="button" data-value="y">Y</button>
@@ -296,65 +335,58 @@
       </section>
 
       <div class="control-group slider-control">
-        <label for="xExpandSlider">X Expand</label>
+        <label for="xExpandSlider">X EXPAND</label>
         <div class="slider-row">
-          <input id="xExpandSlider" type="range" min="3" max="20" value="5" step="1" />
+          <input id="xExpandSlider" type="range" min="1" max="10" value="5" step="1" />
           <span id="xExpandValue" class="value">5</span>
         </div>
       </div>
 
       <div class="control-group slider-control">
-        <label for="yExpandSlider">Y Expand</label>
+        <label for="yExpandSlider">Y EXPAND</label>
         <div class="slider-row">
-          <input id="yExpandSlider" type="range" min="3" max="50" value="18" step="1" />
+          <input id="yExpandSlider" type="range" min="1" max="36" value="18" step="1" />
           <span id="yExpandValue" class="value">18</span>
-        </div>
-      </div>
-
-      <div class="control-group slider-control">
-        <label for="densitySlider">Density</label>
-        <div class="slider-row">
-          <input id="densitySlider" type="range" min="1" max="10" value="1" step="1" />
-          <span id="densityValue" class="value">1</span>
         </div>
       </div>
 
       <div class="spacer"></div>
 
-      <button id="randomiseButton" class="action" type="button">Randomise</button>
-      <button id="saveButton" class="action" type="button">Save</button>
+      <button id="randomiseButton" class="action" type="button">RANDOMISE</button>
+      <button id="saveButton" class="action" type="button">SAVE</button>
     </aside>
 
     <section id="previewPanel" class="preview">
-      <div class="preview-title">Preview</div>
+      <div class="preview-title">PREVIEW</div>
       <div id="canvasHolder"></div>
     </section>
   </main>
 
   <script>
     let sizeDot = 10;
-    let dotStep
-    let scatterAmount = 2;
-    let scatterAmountMax = 8;
+    let dotStep = sizeDot * 0.8;
+    let scatterAmount = 3;
+    let scatterAmountMax = 5;
 
-    let theWord = "Concept";
+    let theWord = "WORD";
     let userRorL = "RL";
-    let fromAmount = 2;
+    let fromAmount = 3;
     let axisMode = "xy";
+    let intensityMode = "even";
     let density = 1;
 
     let wordColor = "#ffffff";
     let bgColor = "#191919";
 
     let xSpacing = 4;
-    let letterCols
 
+    let letterCols = 7 + xSpacing;
     const letterRows = 9;
 
     let wordCols;
     let wordRows;
 
-    let xCoExpand = 2;
+    let xCoExpand = 5;
     let xExpand;
 
     let yCoExpand = 18;
@@ -395,23 +427,12 @@
       X: [[1,1], [7,1], [1,3], [7,3], [3,5], [5,5], [1,7], [7,7], [1,9], [7,9]],
       Y: [[1,1], [7,1], [1,3], [7,3], [3,5], [5,5], [4,7], [4,9]],
       Z: [[1,1], [3,1], [5,1], [7,1], [7,3], [3,5], [5,5], [1,7], [1,9], [3,9], [5,9], [7,9]],
-      
-     "0": [[3,1], [5,1], [1,3], [7,3], [1,5], [7,5], [1,7], [7,7], [3,9], [5,9]],
-     "1": [[4,1], [2,3], [4,3], [4,5], [4,7], [1,9], [3,9], [5,9], [7,9]],
-     "2": [[3,1], [5,1], [1,3], [7,3], [5,5], [3,7], [1,9], [3,9], [5,9], [7,9]],
-     "3": [[1,1], [3,1], [5,1], [7,1], [7,3], [5,5], [1,7], [7,7], [3,9], [5,9]],
-     "4": [[1,1], [1,3], [1,5], [5,5], [1,7], [3,7], [5,7], [7,7], [5,9]],
-     "5": [[1,1], [3,1], [5,1], [7,1], [1,3], [1,5], [3,5], [5,5], [7,7], [1,9], [3,9], [5,9]],
-     "6": [[3,1], [5,1], [7,1], [1,3], [1,5], [3,5], [5,5], [1,7], [7,7], [3,9], [5,9]],
-     "7": [[1,1], [3,1], [5,1], [7,1], [7,3], [5,5], [5,7], [5,9]],
-     "8": [[3,1], [5,1], [1,3], [7,3], [3,5], [5,5], [1,7], [7,7], [3,9], [5,9]],
-     "9": [[3,1], [5,1], [1,3], [7,3], [3,5], [5,5], [7,5], [7,7], [3,9], [5,9]],
     };
 
     function setup() {
       buildStructure();
       pixelDensity(constrain((window.devicePixelRatio || 1) * 2, 2, 4));
-      sketchCanvas = createCanvas(dotStep * (2 + colCount), dotStep * (2 + rowCount));
+      sketchCanvas = createCanvas(dotStep * (1 + colCount), dotStep * (1 + rowCount));
       sketchCanvas.parent("canvasHolder");
       fitCanvasToPreview();
       randomSelect();
@@ -441,25 +462,23 @@
 
     function buildStructure() {
       let wordLength = max(theWord.length, 1);
-      
-      dotStep = sizeDot * 0.9;
+
+      dotStep = sizeDot * 0.8;
       letterCols = 7 + xSpacing;
 
       xExpand = wordLength * xCoExpand;
       yExpand = 1 * yCoExpand;
 
-      wordCols = (wordLength - 1) * letterCols + 7;      
+      wordCols = (wordLength - 1) * letterCols + 7;
       wordRows = 1 * letterRows;
 
       colCount = xExpand + wordCols + xExpand;
       rowCount = yExpand + wordRows + yExpand;
-      
-      
     }
 
     function rebuildSketch(shouldRandomSelect) {
       buildStructure();
-      resizeCanvas(dotStep * (2 + colCount), dotStep * (2 + rowCount));
+      resizeCanvas(dotStep * (1 + colCount), dotStep * (1 + rowCount));
       fitCanvasToPreview();
 
       if (shouldRandomSelect) {
@@ -551,28 +570,105 @@
       return false;
     }
 
+    function selectMids(wordLength, amount) {
+      let selectedLetters = [];
+
+      if (wordLength <= 0) {
+        return selectedLetters;
+      }
+
+      let centerLeft;
+      let centerRight;
+
+      if (wordLength % 2 === 1) {
+        let center = ceil(wordLength / 2) - 1;
+        centerLeft = center;
+        centerRight = center;
+      } else {
+        centerLeft = wordLength / 2 - 1;
+        centerRight = wordLength / 2;
+      }
+
+      for (let step = 0; step < amount; step++) {
+        let leftIndex = centerLeft - step;
+        let rightIndex = centerRight + step;
+
+        if (leftIndex >= 0) {
+          selectedLetters.push(leftIndex);
+        }
+
+        if (rightIndex < wordLength && rightIndex !== leftIndex) {
+          selectedLetters.push(rightIndex);
+        }
+      }
+
+      selectedLetters.sort((a, b) => a - b);
+
+      return selectedLetters;
+    }
+
+    function getTargetLetters(wordLength, selectedLetters, userSide) {
+      let targetLetters = [];
+
+      if (userSide === "L") {
+        for (let i = 0; i < selectedLetters; i++) {
+          targetLetters.push(i);
+        }
+      } else if (userSide === "R") {
+        for (let i = wordLength - selectedLetters; i < wordLength; i++) {
+          targetLetters.push(i);
+        }
+      } else if (userSide === "M") {
+        targetLetters = selectMids(wordLength, selectedLetters);
+      } else if (userSide === "RL") {
+        for (let i = 0; i < wordLength; i++) {
+          targetLetters.push(i);
+        }
+      }
+
+      return targetLetters;
+    }
+
+    function getScatterAmountForLetter(letterNumber, wordLength, userSide) {
+      if (intensityMode !== "gradual" || userSide === "RL") {
+        return scatterAmount;
+      }
+
+      if (userSide === "L") {
+        return max(scatterAmount - letterNumber, 0);
+      }
+
+      if (userSide === "R") {
+        return max(scatterAmount - (wordLength - 1 - letterNumber), 0);
+      }
+
+      if (userSide === "M") {
+        let distanceFromMiddle;
+
+        if (wordLength % 2 === 1) {
+          let center = ceil(wordLength / 2) - 1;
+          distanceFromMiddle = abs(letterNumber - center);
+        } else {
+          let centerLeft = wordLength / 2 - 1;
+          let centerRight = wordLength / 2;
+          distanceFromMiddle = min(abs(letterNumber - centerLeft), abs(letterNumber - centerRight));
+        }
+
+        return max(scatterAmount - distanceFromMiddle, 0);
+      }
+
+      return scatterAmount;
+    }
+
     function randomSelect() {
       removedDots = [];
 
       let upperWord = theWord.toUpperCase();
       let selectedLetters = min(fromAmount, upperWord.length);
       let userSide = userRorL.toUpperCase();
+      let targetLetters = getTargetLetters(upperWord.length, selectedLetters, userSide);
 
-      let startLetter = 0;
-      let endLetter = upperWord.length;
-
-      if (userSide === "L") {
-        startLetter = 0;
-        endLetter = selectedLetters;
-      } else if (userSide === "R") {
-        startLetter = upperWord.length - selectedLetters;
-        endLetter = upperWord.length;
-      } else if (userSide === "RL") {
-        startLetter = 0;
-        endLetter = upperWord.length;
-      }
-
-      for (let letterNumber = startLetter; letterNumber < endLetter; letterNumber++) {
+      for (let letterNumber of targetLetters) {
         let currentLetter = upperWord[letterNumber];
         let dots = typeface[currentLetter];
 
@@ -581,8 +677,9 @@
         }
 
         let chosen = [];
+        let dotAmount = getScatterAmountForLetter(letterNumber, upperWord.length, userSide);
 
-        while (chosen.length < scatterAmount && chosen.length < dots.length) {
+        while (chosen.length < dotAmount && chosen.length < dots.length) {
           let randomNo = floor(random(dots.length));
 
           if (!chosen.includes(randomNo)) {
@@ -620,9 +717,9 @@
         let rowDot;
 
         if (moveUp) {
-          rowDot = floor(random(1, yExpand));
+          rowDot = floor(random(1, yExpand + 1));
         } else {
-          rowDot = floor(random(yExpand + 1 + letterRows + 1, yExpand + letterRows + yExpand + 1));
+          rowDot = floor(random(yExpand + letterRows + 2, yExpand + letterRows + yExpand + 1));
         }
 
         let yCenter = dotStep * rowDot;
@@ -650,16 +747,16 @@
         let colDot;
 
         if (userSide === "L") {
-          colDot = floor(random(1, xExpand-1));
+          colDot = floor(random(1, xExpand + 1));
         } else if (userSide === "R") {
-          colDot = floor(random(xExpand + 2 + wordCols + 1, xExpand + wordCols + xExpand + 1));
-        } else if (userSide === "RL") {
+          colDot = floor(random(xExpand + wordCols + 1, xExpand + wordCols + xExpand + 1));
+        } else if (userSide === "M" || userSide === "RL") {
           let moveLeft = random([true, false]);
 
           if (moveLeft) {
-            colDot = floor(random(1, xExpand-1));
+            colDot = floor(random(1, xExpand + 1));
           } else {
-            colDot = floor(random(xExpand + 2 + wordCols + 1, xExpand + wordCols + xExpand + 1));
+            colDot = floor(random(xExpand + wordCols + 1, xExpand + wordCols + xExpand + 1));
           }
         }
 
@@ -685,6 +782,13 @@
       } else if (userSide === "R") {
         area2StartCol = 1 + xExpand + (upperWord.length - selectedLetters) * letterCols;
         area2EndCol = xExpand + wordCols;
+      } else if (userSide === "M") {
+        let midLetters = selectMids(upperWord.length, selectedLetters);
+
+        if (midLetters.length > 0) {
+          area2StartCol = xExpand + midLetters[0] * letterCols + 1;
+          area2EndCol = xExpand + midLetters[midLetters.length - 1] * letterCols + 7;
+        }
       } else if (userSide === "RL") {
         area2StartCol = xExpand + 1;
         area2EndCol = xExpand + wordCols;
@@ -697,7 +801,7 @@
           areaNo = random([1, 2]);
         } else if (userSide === "R") {
           areaNo = random([2, 3]);
-        } else if (userSide === "RL") {
+        } else if (userSide === "M" || userSide === "RL") {
           areaNo = random([1, 2, 3]);
         }
 
@@ -705,7 +809,7 @@
         let rowDot;
 
         if (areaNo === 1) {
-          colDot = floor(random(1, xExpand-1));
+          colDot = floor(random(1, xExpand + 1));
           rowDot = floor(random(1, yExpand + wordRows + yExpand + 1));
         } else if (areaNo === 2) {
           colDot = floor(random(area2StartCol, area2EndCol + 1));
@@ -713,12 +817,12 @@
           let moveUp = random([true, false]);
 
           if (moveUp) {
-            rowDot = floor(random(1, yExpand));
+            rowDot = floor(random(1, yExpand + 1));
           } else {
             rowDot = floor(random(yExpand + letterRows + 2, yExpand + letterRows + yExpand + 1));
           }
         } else if (areaNo === 3) {
-          colDot = floor(random(xExpand + 2 + wordCols + 1, xExpand + wordCols + xExpand + 1));
+          colDot = floor(random(xExpand + wordCols + 1, xExpand + wordCols + xExpand + 1));
           rowDot = floor(random(1, yExpand + wordRows + yExpand + 1));
         }
 
@@ -748,10 +852,9 @@
         updateFromAmountLimits();
         rebuildSketch(true);
       });
-      
+
       xSpacingSlider.addEventListener("input", () => {
         xSpacing = int(xSpacingSlider.value);
-        letterCols = 7 + xSpacing;
         updateSliderValues();
         rebuildSketch(false);
       });
@@ -771,6 +874,7 @@
         button.addEventListener("click", () => {
           userRorL = button.dataset.value;
           setActiveButton("direction", userRorL);
+          updateFromAmountLimits();
           updateControlState();
           rebuildSketch(true);
         });
@@ -782,6 +886,15 @@
           setActiveButton("axis", axisMode);
           updateControlState();
           rebuildSketch(false);
+        });
+      });
+
+      document.querySelectorAll('[data-group="intensityMode"] button').forEach((button) => {
+        button.addEventListener("click", () => {
+          intensityMode = button.dataset.value;
+          setActiveButton("intensityMode", intensityMode);
+          updateControlState();
+          rebuildSketch(true);
         });
       });
 
@@ -850,8 +963,8 @@
     }
 
     function cleanWord(value) {
-      return value.toUpperCase().replace(/[^A-Z0-9]/g, "");
-}
+      return value.toUpperCase().replace(/[^A-Z]/g, "");
+    }
 
     function normalizeHex(value) {
       let hex = value.trim();
@@ -869,9 +982,16 @@
 
     function updateFromAmountLimits() {
       const fromAmountSlider = document.getElementById("fromAmountSlider");
-      let maxLetters = max(theWord.length, 1);
+      let wordLength = max(theWord.length, 1);
+      let maxLetters = wordLength;
 
+      if (userRorL.toUpperCase() === "M") {
+        maxLetters = ceil(wordLength / 2);
+      }
+
+      fromAmountSlider.min = 1;
       fromAmountSlider.max = maxLetters;
+      fromAmountSlider.step = 1;
       fromAmount = constrain(fromAmount, 1, maxLetters);
       fromAmountSlider.value = fromAmount;
 
@@ -887,17 +1007,28 @@
       document.getElementById("densityValue").textContent = density;
     }
 
-   function updateControlState() {
-  const fromAmountSlider = document.getElementById("fromAmountSlider");
-  const xExpandSlider = document.getElementById("xExpandSlider");
-  const yExpandSlider = document.getElementById("yExpandSlider");
-  const densitySlider = document.getElementById("densitySlider");
+    function updateControlState() {
+      const fromAmountSlider = document.getElementById("fromAmountSlider");
+      const xExpandSlider = document.getElementById("xExpandSlider");
+      const yExpandSlider = document.getElementById("yExpandSlider");
+      const densitySlider = document.getElementById("densitySlider");
+      const intensityModeButtons = document.querySelectorAll('[data-group="intensityMode"] button');
+      let userSide = userRorL.toUpperCase();
 
-  fromAmountSlider.disabled = userRorL.toUpperCase() === "RL";
-  xExpandSlider.disabled = axisMode === "y";
-  yExpandSlider.disabled = axisMode === "x";
-  densitySlider.disabled = false;
-}
+      fromAmountSlider.disabled = userSide === "RL";
+      xExpandSlider.disabled = axisMode === "y";
+      yExpandSlider.disabled = axisMode === "x";
+      densitySlider.disabled = false;
+
+      intensityModeButtons.forEach((button) => {
+        button.disabled = userSide === "RL";
+      });
+
+      if (userSide === "RL") {
+        intensityMode = "even";
+        setActiveButton("intensityMode", intensityMode);
+      }
+    }
 
     function setActiveButton(groupName, value) {
       document.querySelectorAll(`[data-group="${groupName}"] button`).forEach((button) => {
@@ -905,15 +1036,11 @@
       });
     }
 
-function saveArtwork() {
-  let fileName = `${theWord || "word"}-scatter`;
-
-  saveSVG(fileName);
-
-  setTimeout(() => {
-    saveCanvas(sketchCanvas, fileName, "png");
-  }, 500);
-}
+    function saveArtwork() {
+      let fileName = `${theWord || "word"}-scatter`;
+      saveCanvas(sketchCanvas, fileName, "png");
+      saveSVG(fileName);
+    }
 
     function saveSVG(fileName) {
       let circles = currentFrameDots.map((dot) => {
