@@ -432,7 +432,7 @@
     function setup() {
       buildStructure();
       pixelDensity(constrain((window.devicePixelRatio || 1) * 2, 2, 4));
-      sketchCanvas = createCanvas(dotStep * (2 + 1.5 * colCount), dotStep * (2 + rowCount));
+      sketchCanvas = createCanvas(sizeDot * (2 + colCount), sizeDot * (2 + rowCount));
       sketchCanvas.parent("canvasHolder");
       fitCanvasToPreview();
       randomSelect();
@@ -478,7 +478,7 @@
 
     function rebuildSketch(shouldRandomSelect) {
       buildStructure();
-      resizeCanvas(dotStep * (2 + 1.5 * colCount), dotStep * (2 + rowCount));
+      resizeCanvas(sizeDot * (2 + colCount), sizeDot * (2 + rowCount));
       fitCanvasToPreview();
 
       if (shouldRandomSelect) {
